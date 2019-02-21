@@ -14,7 +14,7 @@ db.createCollection('posts', {
             },
             creator: {
                bsonType: 'objectId',
-               description: 'must be an objectid and is required'
+               description: 'must be an objectId and is required'
             },
             comments: {
                bsonType: 'array',
@@ -29,7 +29,7 @@ db.createCollection('posts', {
                      },
                      author: {
                         bsonType: 'objectId',
-                        description: 'must be an objectid and is required'
+                        description: 'must be an objectId and is required'
                      }
                   }
                }
