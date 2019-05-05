@@ -91,16 +91,17 @@ router.post('', (req, res, next) => {
       .then(result => {
          console.log(result);
          client.close();
+         res.status(201).json({ message: 'Product added', productId: result.insertedId });
       })
       .catch(err => {
          console.log(err);
          client.close();
+         res.status(500).json({ message: 'An error occurred.' });
       })
    })
    .catch( err => { 
       console.log(err);
    });
-   res.status(201).json({ message: 'Product added', productId: 'DUMMY' });
 });
 
 // Edit existing product
