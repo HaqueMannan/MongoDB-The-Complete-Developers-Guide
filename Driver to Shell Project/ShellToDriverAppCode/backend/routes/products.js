@@ -3,6 +3,7 @@ const router = Router();
 
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
+const Decimal128 = mongodb.Decimal128;
 
 const products = [
    {
@@ -81,13 +82,20 @@ router.post('', (req, res, next) => {
    const newProduct = {
       name: req.body.name,
       description: req.body.description,
-      price: parseFloat(req.body.price), // store this as 128bit decimal in MongoDB
+      price: Decimal128.fromString(req.body.price.toString()), // store this as 128bit decimal in MongoDB
       image: req.body.image
    };
    MongoClient.connect('mongodb+srv://testUser:bwXIYOay2PyOdLey@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true')
    .then( client => {
-      client.db().collection('products').insertOne(newProduct);
-      client.close();
+      client.db().collection('products').insertOne(newProduct)
+      .then(result => {
+         console.log(result);
+         client.close();
+      })
+      .catch(err => {
+         console.log(err);
+         client.close();
+      })
    })
    .catch( err => { 
       console.log(err);
