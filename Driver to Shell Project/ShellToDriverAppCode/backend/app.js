@@ -2,7 +2,6 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoClient = require('mongodb').MongoClient;
 
 const productRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
@@ -25,14 +24,5 @@ app.use((req, res, next) => {
 
 app.use('/products', productRoutes);
 app.use('/', authRoutes);
-
-mongoClient.connect('mongodb+srv://testUser:bwXIYOay2PyOdLey@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true')
-   .then( client => {
-      console.log('Connected!');
-      client.close();
-   })
-   .catch( err => { 
-      console.log(err);
-   });
 
 app.listen(3100);

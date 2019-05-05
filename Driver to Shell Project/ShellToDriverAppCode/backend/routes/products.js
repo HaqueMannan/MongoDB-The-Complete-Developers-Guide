@@ -1,6 +1,9 @@
 const Router = require('express').Router;
 const router = Router();
 
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+
 const products = [
    {
       _id: 'fasdlk1j',
@@ -81,7 +84,14 @@ router.post('', (req, res, next) => {
       price: parseFloat(req.body.price), // store this as 128bit decimal in MongoDB
       image: req.body.image
    };
-   console.log(newProduct);
+   MongoClient.connect('mongodb+srv://testUser:bwXIYOay2PyOdLey@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true')
+   .then( client => {
+      client.db().collection('products').insertOne(newProduct);
+      client.close();
+   })
+   .catch( err => { 
+      console.log(err);
+   });
    res.status(201).json({ message: 'Product added', productId: 'DUMMY' });
 });
 
