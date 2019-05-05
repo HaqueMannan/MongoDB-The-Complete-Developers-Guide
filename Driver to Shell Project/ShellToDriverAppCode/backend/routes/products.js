@@ -56,18 +56,40 @@ const products = [
 
 // Get list of products products
 router.get('/', (req, res, next) => {
-   // Return a list of dummy products
-   // Later, this data will be fetched from MongoDB
-   const queryPage = req.query.page;
-   const pageSize = 5;
-   let resultProducts = [...products];
-   if (queryPage) {
-      resultProducts = products.slice(
-         (queryPage - 1) * pageSize,
-         queryPage * pageSize
-         );
-   }
-   res.json(resultProducts);
+   // // Return a list of dummy products
+   // // Later, this data will be fetched from MongoDB
+   // const queryPage = req.query.page;
+   // const pageSize = 5;
+   // let resultProducts = [...products];
+   // if (queryPage) {
+   //    resultProducts = products.slice(
+   //       (queryPage - 1) * pageSize,
+   //       queryPage * pageSize
+   //       );
+   // }
+   MongoClient.connect('mongodb+srv://testUser:bwXIYOay2PyOdLey@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true')
+      .then( client => {
+         const products = []
+         client.db().collection('products').find().forEach(productDoc => {
+            // console.log(productDoc);
+            productDoc.price = productDoc.price.toString();
+            products.push(productDoc);
+         })
+         .then(result => {
+            // console.log(result);
+            client.close();
+            res.status(200).json(products);
+         })
+         .catch(err => {
+            console.log(err);
+            client.close();
+            res.status(500).json({ message: 'An error occurred.' });
+         })
+      })
+      .catch( err => { 
+         console.log(err);
+         res.status(500).json({ message: 'An error occurred.' });
+      });
 });
 
 // Get single product
@@ -86,22 +108,23 @@ router.post('', (req, res, next) => {
       image: req.body.image
    };
    MongoClient.connect('mongodb+srv://testUser:bwXIYOay2PyOdLey@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true')
-   .then( client => {
-      client.db().collection('products').insertOne(newProduct)
-      .then(result => {
-         console.log(result);
-         client.close();
-         res.status(201).json({ message: 'Product added', productId: result.insertedId });
+      .then( client => {
+         client.db().collection('products').insertOne(newProduct)
+         .then(result => {
+            console.log(result);
+            client.close();
+            res.status(201).json({ message: 'Product added', productId: result.insertedId });
+         })
+         .catch(err => {
+            console.log(err);
+            client.close();
+            res.status(500).json({ message: 'An error occurred.' });
+         })
       })
-      .catch(err => {
+      .catch( err => { 
          console.log(err);
-         client.close();
          res.status(500).json({ message: 'An error occurred.' });
-      })
-   })
-   .catch( err => { 
-      console.log(err);
-   });
+      });
 });
 
 // Edit existing product
