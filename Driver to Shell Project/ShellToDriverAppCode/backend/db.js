@@ -1,16 +1,17 @@
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
-const mongodbUrl = 'mongodb+srv://testUser:bwXIYOay2PyOdLey@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true'
+const mongodbUrl ='mongodb+srv://testUser:Ozm16rmfKtUkeTpz@fromshelltodrivertutorial-gtajb.mongodb.net/test?retryWrites=true';
 
 let _db;
+
 const initDb = callback => {
-   if(_db) {
-      console.log('Database is already initialised!');
+   if (_db) {
+      console.log('Database is already initialized!');
       return callback(null, _db);
    }
    MongoClient.connect(mongodbUrl)
       .then(client => {
-         _db = client.db();
+         _db = client;
          callback(null, _db);
       })
       .catch(err => {
@@ -19,13 +20,13 @@ const initDb = callback => {
 };
 
 const getDb = () => {
-   if(!_b){
-      throw Error('Database not initialised!');
+   if (!_db) {
+      throw Error('Database not initialised');
    }
    return _db;
 };
 
-module.export = {
+module.exports = {
    initDb,
    getDb
 };

@@ -3,14 +3,16 @@ const router = Router();
 
 const mongodb = require('mongodb');
 const db = require('../db');
+
 const Decimal128 = mongodb.Decimal128;
+const ObjectId = mongodb.ObjectId;
 
 // const products = [
 //    {
 //       _id: 'fasdlk1j',
 //       name: 'Stylish Backpack',
 //       description:
-//       'A stylish backpack for the modern women or men. It easily fits all your stuff.',
+//          'A stylish backpack for the modern women or men. It easily fits all your stuff.',
 //       price: 79.99,
 //       image: 'http://localhost:3100/images/product-backpack.jpg'
 //    },
@@ -18,7 +20,7 @@ const Decimal128 = mongodb.Decimal128;
 //       _id: 'asdgfs1',
 //       name: 'Lovely Earrings',
 //       description:
-//       "How could a man resist these lovely earrings? Right - he couldn't.",
+//          "How could a man resist these lovely earrings? Right - he couldn't.",
 //       price: 129.59,
 //       image: 'http://localhost:3100/images/product-earrings.jpg'
 //    },
@@ -26,7 +28,7 @@ const Decimal128 = mongodb.Decimal128;
 //       _id: 'askjll13',
 //       name: 'Working MacBook',
 //       description:
-//       'Yes, you got that right - this MacBook has the old, working keyboard. Time to get it!',
+//          'Yes, you got that right - this MacBook has the old, working keyboard. Time to get it!',
 //       price: 1799,
 //       image: 'http://localhost:3100/images/product-macbook.jpg'
 //    },
@@ -41,7 +43,7 @@ const Decimal128 = mongodb.Decimal128;
 //       _id: 'lkljlkk11',
 //       name: 'A T-Shirt',
 //       description:
-//       'Never be naked again! This T-Shirt can soon be yours. If you find that buy button.',
+//          'Never be naked again! This T-Shirt can soon be yours. If you find that buy button.',
 //       price: 39.99,
 //       image: 'http://localhost:3100/images/product-shirt.jpg'
 //    },
@@ -53,12 +55,9 @@ const Decimal128 = mongodb.Decimal128;
 //       image: 'http://localhost:3100/images/product-watch.jpg'
 //    }
 // ];
-const products = [];
 
 // Get list of products products
 router.get('/', (req, res, next) => {
-   // // Return a list of dummy products
-   // // Later, this data will be fetched from MongoDB
    // const queryPage = req.query.page;
    // const pageSize = 5;
    // let resultProducts = [...products];
@@ -66,29 +65,37 @@ router.get('/', (req, res, next) => {
    //    resultProducts = products.slice(
    //       (queryPage - 1) * pageSize,
    //       queryPage * pageSize
-   //       );
+   //    );
    // }
+   const products = [];
    db.getDb()
       .db()
       .collection('products').find().forEach(productDoc => {
-         // console.log(productDoc);
          productDoc.price = productDoc.price.toString();
          products.push(productDoc);
       })
          .then(result => {
-            // console.log(result);
             res.status(200).json(products);
          })
          .catch(err => {
             console.log(err);
             res.status(500).json({ message: 'An error occurred.' });
-         })
+         });
 });
 
 // Get single product
 router.get('/:id', (req, res, next) => {
-   const product = products.find(p => p._id === req.params.id);
-   res.json(product);
+   db.getDb()
+      .db()
+      .collection('products').findOne({ _id: new ObjectId(req.params.id) })
+         .then(productDoc => {
+            productDoc.price = productDoc.price.toString();
+            res.status(200).json(productDoc);
+         })
+         .catch(err => {
+            console.log(err);
+            res.status(500).json({ message: 'An error occurred.' });
+         });
 });
 
 // Add new product
@@ -105,12 +112,14 @@ router.post('', (req, res, next) => {
       .collection('products').insertOne(newProduct)
          .then(result => {
             console.log(result);
-            res.status(201).json({ message: 'Product added', productId: result.insertedId });
+            res
+            .status(201)
+            .json({ message: 'Product added', productId: result.insertedId });
          })
          .catch(err => {
             console.log(err);
             res.status(500).json({ message: 'An error occurred.' });
-         })
+         });
 });
 
 // Edit existing product
