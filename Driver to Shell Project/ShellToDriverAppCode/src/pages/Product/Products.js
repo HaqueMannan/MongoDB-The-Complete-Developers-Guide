@@ -26,6 +26,8 @@ class ProductsPage extends Component {
 
    fetchData = () => {
       axios
+      //Pagination - change value from 1 to another number to see it work.
+      // .get('http://localhost:3100/products?page=1')
       .get('http://localhost:3100/products')
       .then(productsResponse => {
          this.setState({ isLoading: false, products: productsResponse.data });

@@ -58,8 +58,8 @@ const ObjectId = mongodb.ObjectId;
 
 // Get list of products products
 router.get('/', (req, res, next) => {
-   // const queryPage = req.query.page;
-   // const pageSize = 5;
+   const queryPage = req.query.page;
+   const pageSize = 3;
    // let resultProducts = [...products];
    // if (queryPage) {
    //    resultProducts = products.slice(
@@ -70,7 +70,10 @@ router.get('/', (req, res, next) => {
    const products = [];
    db.getDb()
       .db()
-      .collection('products').find().forEach(productDoc => {
+      .collection('products').find()
+      // turn on for pagination demo - use src/products/products.js to test the fetch using page number.
+      // .sort({price: -1}).skip((queryPage - 1)*pageSize).limit(pageSize)
+      .forEach(productDoc => {
          // console.log(productDoc);
          productDoc.price = productDoc.price.toString();
          products.push(productDoc);
