@@ -71,10 +71,12 @@ router.get('/', (req, res, next) => {
    db.getDb()
       .db()
       .collection('products').find().forEach(productDoc => {
+         // console.log(productDoc);
          productDoc.price = productDoc.price.toString();
          products.push(productDoc);
       })
          .then(result => {
+            // console.log(result);
             res.status(200).json(products);
          })
          .catch(err => {
@@ -112,9 +114,7 @@ router.post('', (req, res, next) => {
       .collection('products').insertOne(newProduct)
          .then(result => {
             console.log(result);
-            res
-            .status(201)
-            .json({ message: 'Product added', productId: result.insertedId });
+            res.status(201).json({ message: 'Product added', productId: result.insertedId });
          })
          .catch(err => {
             console.log(err);
@@ -128,17 +128,36 @@ router.patch('/:id', (req, res, next) => {
    const updatedProduct = {
       name: req.body.name,
       description: req.body.description,
-      price: parseFloat(req.body.price), // store this as 128bit decimal in MongoDB
+      price: Decimal128.fromString(req.body.price.toString()), // store this as 128bit decimal in MongoDB
       image: req.body.image
    };
-   console.log(updatedProduct);
-   res.status(200).json({ message: 'Product updated', productId: 'DUMMY' });
+   db.getDb()
+      .db()
+      .collection('products').updateOne({_id: new ObjectId(req.params.id)}, 
+      {$set: updatedProduct})
+         .then(result => {
+            // console.log(updatedProduct);
+            res.status(200).json({ message: 'Product updated', productId: req.params.id });
+         })
+         .catch(err => {
+            console.log(err);
+            res.status(500).json({ message: 'An error occurred.' });
+         });
 });
 
 // Delete a product
 // Requires logged in user
 router.delete('/:id', (req, res, next) => {
-   res.status(200).json({ message: 'Product deleted' });
+   db.getDb()
+   .db()
+   .collection('products').deleteOne({_id: new ObjectId(req.params.id)})
+      .then(result => {
+         res.status(200).json({ message: 'Product deleted' });
+      })
+      .catch( err => {
+         console.log(err);
+         res.status(500).json({ message: 'An error occurred.' });
+      });
 });
 
 module.exports = router;
