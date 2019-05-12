@@ -71,8 +71,9 @@ router.get('/', (req, res, next) => {
    db.getDb()
       .db()
       .collection('products').find()
+      .sort({price: -1})
       // turn on for pagination demo - use src/products/products.js to test the fetch using page number.
-      // .sort({price: -1}).skip((queryPage - 1)*pageSize).limit(pageSize)
+      // .skip((queryPage - 1)*pageSize).limit(pageSize)
       .forEach(productDoc => {
          // console.log(productDoc);
          productDoc.price = productDoc.price.toString();
