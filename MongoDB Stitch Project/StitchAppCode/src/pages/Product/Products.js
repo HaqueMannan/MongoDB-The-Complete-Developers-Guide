@@ -18,6 +18,7 @@ class ProductsPage extends Component {
                this.fetchData();
             })
             .catch(err => {
+               this.setState({ isLoading: false });
                this.props.onError(
                   'Deleting the product failed. Please try again later'
                );
@@ -29,7 +30,7 @@ class ProductsPage extends Component {
       const mongodb = Stitch.defaultAppClient().getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas');
       mongodb.db('test').collection('products').find().asArray()
          .then(products => {
-            this.setState({ products: products })
+            this.setState({ isLoading: false, products: products })
          })
          .catch(err => {
             this.props.onError(
