@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import {Stitch} from 'mongodb-stitch-browser-sdk';
+import { Stitch, AnonymousCredential } from 'mongodb-stitch-browser-sdk';
 // import axios from 'axios';    // No longer required because using Stitch.
 
 import Header from './components/Header/Header';
@@ -22,7 +22,8 @@ class App extends Component {
 
    constructor() {
       super();
-      Stitch.initializeDefaultAppClient('stitchtutorial-tjpqh');
+      const client = Stitch.initializeDefaultAppClient('stitchtutorial-tjpqh');
+      client.auth.loginWithCredential( new AnonymousCredential());
    }
 
    logoutHandler = () => {
