@@ -30,7 +30,12 @@ class ProductsPage extends Component {
       const mongodb = Stitch.defaultAppClient().getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas');
       mongodb.db('test').collection('products').find().asArray()
          .then(products => {
-            this.setState({ isLoading: false, products: products })
+            const transformedProducts = products.map(product => {
+               product._id = product._id.toString();
+               product.price = product.price.toString();
+               return product;
+            });
+            this.setState({ isLoading: false, products: products });
          })
          .catch(err => {
             this.props.onError(
