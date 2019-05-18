@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import BSON from 'bson';
 import { Stitch, RemoteMongoClient } from 'mongodb-stitch-browser-sdk';
+// import axios from 'axios';    // No longer required because using Stitch.
 
 import Products from '../../components/Products/Products';
 
@@ -11,23 +12,25 @@ class ProductsPage extends Component {
    }
 
    productDeleteHandler = productId => {
-      axios
-         .delete('http://localhost:3100/products/' + productId)
-            .then(result => {
-               console.log(result);
-               this.fetchData();
-            })
-            .catch(err => {
-               this.setState({ isLoading: false });
-               this.props.onError(
-                  'Deleting the product failed. Please try again later'
-               );
-               console.log(err);
-            });
+      const mongodb = Stitch.defaultAppClient.getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas');
+
+      mongodb.db('test').collection('products').deleteOne({ _id: new BSON.ObjectID(productId) })
+         .then( result => {
+            console.log(result);
+            this.fetchData();
+         })
+         .catch(err => {
+            this.setState({ isLoading: false });
+            this.props.onError(
+               'Deleting the product failed. Please try again later'
+            );
+            console.log(err);
+         });
    };
 
    fetchData = () => {
-      const mongodb = Stitch.defaultAppClient().getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas');
+      const mongodb = Stitch.defaultAppClient.getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas');
+
       mongodb.db('test').collection('products').find().asArray()
          .then(products => {
             const transformedProducts = products.map(product => {
