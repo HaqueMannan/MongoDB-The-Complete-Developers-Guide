@@ -15,7 +15,7 @@ import { stitchServiceErrorCodeFromApi } from 'mongodb-stitch-core-sdk/dist/esm/
 
 class App extends Component {
    state = {
-      isAuth: true,
+      isAuth: false,
       authMode: 'login',
       error: null
    };
