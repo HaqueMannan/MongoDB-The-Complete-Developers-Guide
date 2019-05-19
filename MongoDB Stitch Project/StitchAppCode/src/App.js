@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { Stitch, AnonymousCredential } from 'mongodb-stitch-browser-sdk';
+import { Stitch, AnonymousCredential, UserPasswordAuthProviderClient } from 'mongodb-stitch-browser-sdk';
 // import axios from 'axios';    // No longer required because using Stitch.
 
 import Header from './components/Header/Header';
@@ -22,8 +22,8 @@ class App extends Component {
 
    constructor() {
       super();
-      const client = Stitch.initializeDefaultAppClient('stitchtutorial-tjpqh');
-      client.auth.loginWithCredential( new AnonymousCredential());
+      this.client = Stitch.initializeDefaultAppClient('stitchtutorial-tjpqh');
+      // this.client.auth.loginWithCredential( new AnonymousCredential());    //No Longer Used as we are using Email/Password Authentication.
    }
 
    logoutHandler = () => {
@@ -35,6 +35,14 @@ class App extends Component {
       if (authData.email.trim() === '' || authData.password.trim() === '') {
          return;
       }
+      const emailPassClient = this.client.auth.getProviderClient(UserPasswordAuthProviderClient.factory);
+      emailPassClient.registerWithEmail(authData.email, authData.password)
+         .then()
+         .catch(err => {
+            this.errorHandler('An error occurred.');
+            console.log(err);
+            this.setState({ isAuth: false });
+         });
       // let request;
       // if (this.state.authMode === 'login') {
       //    request = axios.post('http://localhost:3100/login', authData);
