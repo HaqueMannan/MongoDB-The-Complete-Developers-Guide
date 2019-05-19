@@ -42,7 +42,6 @@ class App extends Component {
       if (this.state.authMode === 'login') {
          const credential = new UserPasswordCredential(authData.email, authData.password);
          request = this.client.auth.loginWithCredential(credential);
-         request = axios.post('http://localhost:3100/login', authData);
       } else {
          request = emailPassClient.registerWithEmail(authData.email, authData.password)
       }
