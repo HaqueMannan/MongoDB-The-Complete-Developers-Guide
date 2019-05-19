@@ -24,6 +24,7 @@ class App extends Component {
       super();
       this.client = Stitch.initializeDefaultAppClient('stitchtutorial-tjpqh');
       // this.client.auth.loginWithCredential( new AnonymousCredential());    //No Longer Used as we are using Email/Password Authentication.
+      // this.client.callFunction('Hello World', ['John Doe']);   // Calling on a Stitch Function and passing in arguments to the function.
    }
 
    logoutHandler = () => {
